@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# mogura - SSH tunnel manager using macOS LaunchAgent
+#
+set -euo pipefail
+
+# Resolve script location (follow symlinks)
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [[ -L "$SCRIPT_PATH" ]]; do
+    SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_PATH")" && pwd)"
+    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+    [[ "$SCRIPT_PATH" != /* ]] && SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_PATH"
+done
+MOGURA_ROOT="$(cd -P "$(dirname "$SCRIPT_PATH")/.." && pwd)"
+
+# Load libraries
+source "${MOGURA_ROOT}/lib/mogura-core.sh"
+source "${MOGURA_ROOT}/lib/mogura-launchd.sh"
+source "${MOGURA_ROOT}/lib/mogura-tunnel.sh"
+
+# Initialize directories
+mogura_init
+
+# Command dispatch
+case "${1:-}" in
+    add)
+        shift
+        cmd_add "$@"
+        ;;
+    remove|rm)
+        shift
+        cmd_remove "$@"
+        ;;
+    start)
+        shift
+        cmd_start "$@"
+        ;;
+    stop)
+        shift
+        cmd_stop "$@"
+        ;;
+    restart)
+        shift
+        cmd_restart "$@"
+        ;;
+    status)
+        shift
+        cmd_status "$@"
+        ;;
+    list|ls)
+        cmd_list
+        ;;
+    enable)
+        shift
+        cmd_enable "$@"
+        ;;
+    disable)
+        shift
+        cmd_disable "$@"
+        ;;
+    logs)
+        shift
+        cmd_logs "$@"
+        ;;
+    _connect)
+        # Internal command: called by LaunchAgent
+        shift
+        tunnel_connect "$@"
+        ;;
+    help|--help|-h)
+        cmd_help
+        ;;
+    version|--version|-v)
+        echo "mogura 0.1.0"
+        ;;
+    *)
+        if [[ -n "${1:-}" ]]; then
+            die "Unknown command: $1"
+        fi
+        cmd_help
+        ;;
+esac
