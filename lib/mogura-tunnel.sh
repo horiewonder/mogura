@@ -321,7 +321,7 @@ cmd_logs() {
         echo "(empty)"
     fi
 
-    if [[ "$follow" == "-f" ]] || [[ "$2" == "-f" ]]; then
+    if [[ "$follow" == "-f" ]]; then
         echo ""
         echo "${BOLD}Following logs... (Ctrl+C to stop)${NC}"
         tail -f "$log_file" "$err_file" 2>/dev/null
