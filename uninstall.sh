@@ -5,11 +5,11 @@
 set -euo pipefail
 
 # Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BOLD='\033[1m'
-NC='\033[0m'
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+BOLD=$'\033[1m'
+NC=$'\033[0m'
 
 info() { echo -e "${GREEN}==>${NC} ${BOLD}$*${NC}"; }
 warn() { echo -e "${YELLOW}warning:${NC} $*"; }
