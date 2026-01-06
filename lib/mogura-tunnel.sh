@@ -23,8 +23,9 @@ tunnel_connect() {
     # Execute SSH with tunnel-optimized options
     exec /usr/bin/ssh -N \
         -o ExitOnForwardFailure=yes \
-        -o ServerAliveInterval=30 \
+        -o ServerAliveInterval=15 \
         -o ServerAliveCountMax=3 \
+        -o TCPKeepAlive=yes \
         -o BatchMode=yes \
         -o StrictHostKeyChecking=accept-new \
         "$SSH_HOST"
@@ -326,4 +327,50 @@ cmd_logs() {
         echo "${BOLD}Following logs... (Ctrl+C to stop)${NC}"
         tail -f "$log_file" "$err_file" 2>/dev/null
     fi
+}
+
+# Upgrade tunnel (regenerate plist with new settings)
+cmd_upgrade() {
+    local name="${1:-}"
+
+    if [[ -n "$name" ]]; then
+        # Single tunnel upgrade
+        validate_tunnel_name "$name"
+        if ! tunnel_exists "$name"; then
+            die "Tunnel '${name}' not found"
+        fi
+        upgrade_tunnel "$name"
+    else
+        # Upgrade all tunnels
+        local tunnels
+        tunnels=$(list_tunnel_names)
+        if [[ -z "$tunnels" ]]; then
+            echo "No tunnels to upgrade."
+            return
+        fi
+        echo "Upgrading all tunnels..."
+        while IFS= read -r t; do
+            upgrade_tunnel "$t"
+        done <<< "$tunnels"
+        echo ""
+        echo "All tunnels upgraded!"
+    fi
+}
+
+upgrade_tunnel() {
+    local name="$1"
+    local was_running=false
+
+    if launchd_is_running "$name"; then
+        was_running=true
+        launchd_unload "$name"
+    fi
+
+    generate_plist "$name"
+
+    if $was_running; then
+        launchd_load "$name"
+    fi
+
+    info "Upgraded tunnel: ${name}"
 }

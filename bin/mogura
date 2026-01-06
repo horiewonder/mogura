@@ -62,6 +62,10 @@ case "${1:-}" in
         shift
         cmd_logs "$@"
         ;;
+    upgrade)
+        shift
+        cmd_upgrade "$@"
+        ;;
     _connect)
         # Internal command: called by LaunchAgent
         shift

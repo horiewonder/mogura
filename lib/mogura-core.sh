@@ -168,6 +168,7 @@ ${BOLD}COMMANDS:${NC}
     enable <name>                   Enable auto-start
     disable <name>                  Disable auto-start
     logs <name>                     Show tunnel logs
+    upgrade [name]                  Upgrade tunnel plist (all if no name)
 
 ${BOLD}EXAMPLES:${NC}
     # Add SSH tunnel config to ~/.ssh/config first:
