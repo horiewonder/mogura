@@ -74,6 +74,7 @@ mogura logs dev
 | `mogura enable <name>` | 自動起動有効 |
 | `mogura disable <name>` | 自動起動無効 |
 | `mogura logs <name>` | ログ表示 |
+| `mogura upgrade [name]` | plistを最新設定で再生成 |
 
 ## ディレクトリ構成
 
@@ -100,9 +101,14 @@ mogura logs dev
 ### LaunchAgent 設定
 
 - `RunAtLoad: true` - ログイン時自動起動
-- `KeepAlive.NetworkState: true` - ネットワーク接続時のみ
-- `KeepAlive.SuccessfulExit: false` - 異常終了時に再起動
+- `KeepAlive: true` - プロセス終了時に自動再起動
 - `ThrottleInterval: 10` - 再起動間隔 10秒
+
+### SSH 接続オプション
+
+- `ServerAliveInterval=15` - 15秒ごとにサーバーに生存確認
+- `ServerAliveCountMax=3` - 3回失敗で切断（約45秒で検知）
+- `TCPKeepAlive=yes` - TCP層でもキープアライブ
 
 ## アンインストール
 
